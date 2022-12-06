@@ -2,7 +2,7 @@
 
 > This program generates and shuffles a tarot deck. It then prompts the user to select the number of cards to draw from the deck, and displays those cards to the user. The program uses structs to represent the cards in the deck, and maps and slices to hold the names and suits of the cards. It also uses the crypto/rand and github.com/manifoldco/promptui packages to generate random numbers and create prompts for the user, respectively.
 
-This application was built with heavy input from an [Artificial intelligence](https://chat.openai.com/chat) ('AI'). The above paragraph was written by the AI as were most of the comments in the code. 
+This application was built with heavy input from an Artificial intelligence ('AI') - [ChatGPT](https://chat.openai.com/chat). The above paragraph was written by the AI as were most of the comments in the code. 
 
 ## The human input:
 
