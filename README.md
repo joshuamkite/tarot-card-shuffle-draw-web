@@ -51,7 +51,7 @@ It is typical to use a 'seed' value of the current time to generate a non-repeat
 
 ## Tests
 
-Subsequently I have added some unit tests generated with ChatGPT. These cover a subset of the code for reasons I have written about more extensively at my website. Currently coverage is reported as:
+Subsequently I added some unit tests generated with ChatGPT. These cover a subset of the code for reasons I have written about more extensively at my website. Currently coverage is reported as:
 
 ```golang
 go test -cover
@@ -59,3 +59,7 @@ PASS
 coverage: 26.3% of statements
 ok      github.com/joshuamkite/tarot-card-shuffle-draw  0.003s
 ```
+
+## Subsequently
+
+Added interactive license display feature to comply with GPL 3.0; made minor changes to output formatting; added build script
