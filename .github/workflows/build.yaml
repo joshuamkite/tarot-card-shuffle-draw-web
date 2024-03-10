@@ -15,10 +15,10 @@ jobs:
     name: Test on all branches
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
           go-version: "1.22"
 
@@ -45,10 +45,10 @@ jobs:
             goos: "windows"
             goarch: "amd64"
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
           go-version: "1.22" # Adjust to match your Go version
 
@@ -61,7 +61,7 @@ jobs:
           zip -r tarot_${{ matrix.goos }}_${{ matrix.goarch }}.zip ./bin/tarot_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.exe' || '' }}
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: tarot-${{ matrix.goos }}-${{ matrix.goarch }}
           path: tarot_${{ matrix.goos }}_${{ matrix.goarch }}.zip
@@ -72,7 +72,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: Binaries
 
