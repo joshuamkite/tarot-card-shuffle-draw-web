@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - "**"
+    tags:
+      - "v*"
   pull_request:
     types: [closed] # Restricts PR jobs to only run when PRs are closed
 
