@@ -9,6 +9,10 @@ on:
   pull_request:
     types: [closed] # Restricts PR jobs to only run when PRs are closed
 
+permissions:
+  contents: write
+  packages: write
+
 jobs:
   test:
     if: github.event_name == 'push' # Runs only on push events
