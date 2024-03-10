@@ -1,0 +1,98 @@
+name: Go CI/CD
+
+on:
+  push:
+    branches:
+      - "**"
+    tags:
+      - "v*"
+  pull_request:
+    branches:
+      - "**"
+
+jobs:
+  test:
+    name: Test on all branches
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.22"
+
+      - name: Test
+        run: go test -v -cover ./...
+
+  build:
+    name: Build and Package
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - platform: "linux/amd64"
+            goos: "linux"
+            goarch: "amd64"
+          - platform: "darwin/amd64"
+            goos: "darwin"
+            goarch: "amd64"
+          - platform: "darwin/arm64"
+            goos: "darwin"
+            goarch: "arm64"
+          - platform: "windows/amd64"
+            goos: "windows"
+            goarch: "amd64"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.22"
+
+      - name: Build
+        run: |
+          GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -o ./bin/tarot_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.exe' || '' }} main.go
+
+      - name: Package Binaries
+        run: |
+          zip -j tarot_${{ matrix.goos }}_${{ matrix.goarch }}.zip ./bin/tarot_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.exe' || '' }}
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: tarot-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: tarot_${{ matrix.goos }}_${{ matrix.goarch }}.zip
+
+  release:
+    name: Create Release and Upload Artifacts
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: Binaries
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./tarot_linux_amd64.zip
+          asset_name: tarot_linux_amd64.zip
+          asset_content_type: application/zip
