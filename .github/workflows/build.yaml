@@ -1,0 +1,92 @@
+name: Go CI/CD
+
+on:
+  push:
+    branches:
+      - "**"
+    tags:
+      - "v*"
+  pull_request:
+    branches:
+      - "**"
+
+jobs:
+  test:
+    name: Test on all branches
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: "1.22"
+
+      - name: Test
+        run: go test ./...
+
+  build:
+    name: Build and Package
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform:
+          - "linux/amd64"
+          - "linux/arm64"
+          - "darwin/amd64"
+          - "darwin/arm64"
+          - "windows/amd64"
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: "1.22"
+
+      - name: Build
+        run: |
+          GOOS=${{ matrix.platform.split('/')[0] }} GOARCH=${{ matrix.platform.split('/')[1] }} go build -o ./bin/tarot_${{ matrix.platform.split('/')[0] }}_${{ matrix.platform.split('/')[1] }}${{ endsWith(matrix.platform, 'windows/amd64') && '.exe' || '' }} main.go
+
+      - name: Package Binaries
+        run: |
+          zip tarot_${{ matrix.platform.split('/')[0] }}_${{ matrix.platform.split('/')[1] }}.zip ./bin/tarot_${{ matrix.platform.split('/')[0] }}_${{ matrix.platform.split('/')[1] }}${{ endsWith(matrix.platform, 'windows/amd64') && '.exe' || '' }}
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: tarot-${{ matrix.platform }}
+          path: tarot_${{ matrix.platform.split('/')[0] }}_${{ matrix.platform.split('/')[1] }}.zip
+
+  release:
+    name: Create Release and Upload Artifacts
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: Binaries
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./tarot_linux_amd64.zip
+          asset_name: tarot_linux_amd64.zip
+          asset_content_type: application/zip
+        # Repeat the above step for each binary you have, adjusting asset_path and asset_name accordingly.
