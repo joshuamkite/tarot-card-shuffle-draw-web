@@ -58,7 +58,7 @@ jobs:
 
       - name: Package Binaries
         run: |
-          zip -r tarot_${{ matrix.goos }}_${{ matrix.goarch }}.zip ./bin/tarot_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.exe' || '' }}
+          zip -j tarot_${{ matrix.goos }}_${{ matrix.goarch }}.zip ./bin/tarot_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.exe' || '' }}
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
