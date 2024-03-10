@@ -75,3 +75,16 @@ jobs:
     steps:
       - name: Download all Artifacts
         uses: actions/download-artifact@v4
+
+      - name: Upload Release Assets
+        run: |
+          for ARTIFACT_DIR in tarot-*; do
+            if [ -d "$ARTIFACT_DIR" ]; then
+              for ZIPFILE in $ARTIFACT_DIR/*.zip; do
+                echo "Uploading artifact ${ZIPFILE}..."
+                gh release upload "${{ github.ref_name }}" "${ZIPFILE}" --repo "${{ github.repository }}"
+              done
+            fi
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
