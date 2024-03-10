@@ -26,44 +26,45 @@ jobs:
         run: go test ./...
 
   build:
+    name: Build and Package
+    needs: test
     runs-on: ubuntu-latest
     strategy:
       matrix:
         include:
           - platform: "linux/amd64"
-            GOOS: "linux"
-            GOARCH: "amd64"
+            goos: "linux"
+            goarch: "amd64"
           - platform: "darwin/amd64"
-            GOOS: "darwin"
-            GOARCH: "amd64"
+            goos: "darwin"
+            goarch: "amd64"
           - platform: "darwin/arm64"
-            GOOS: "darwin"
-            GOARCH: "arm64"
+            goos: "darwin"
+            goarch: "arm64"
           - platform: "windows/amd64"
-            GOOS: "windows"
-            GOARCH: "amd64"
+            goos: "windows"
+            goarch: "amd64"
     steps:
       - uses: actions/checkout@v3
 
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version: "1.17" # Adjust to match your Go version
+          go-version: "1.22" # Adjust to match your Go version
 
       - name: Build
-        env:
-          GOOS: ${{ matrix.GOOS }}
-          GOARCH: ${{ matrix.GOARCH }}
-          PLATFORM: ${{ matrix.platform }}
         run: |
-          go build -o ./bin/tarot_${GOOS}_${GOARCH}${{ matrix.GOOS == 'windows' && '.exe' || '' }} main.go
-          zip tarot_${GOOS}_${GOARCH}.zip ./bin/tarot_${GOOS}_${GOARCH}${{ matrix.GOOS == 'windows' && '.exe' || '' }}
+          GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -o ./bin/tarot_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.exe' || '' }} main.go
+
+      - name: Package Binaries
+        run: |
+          zip -r tarot_${{ matrix.goos }}_${{ matrix.goarch }}.zip ./bin/tarot_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.exe' || '' }}
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: tarot-${{ matrix.platform }}
-          path: tarot_${{ matrix.GOOS }}_${{ matrix.GOARCH }}.zip
+          name: tarot-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: tarot_${{ matrix.goos }}_${{ matrix.goarch }}.zip
 
   release:
     name: Create Release and Upload Artifacts
