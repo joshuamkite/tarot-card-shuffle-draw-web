@@ -1,5 +1,19 @@
 # Tarot card shuffle draw
 
+- [Tarot card shuffle draw](#tarot-card-shuffle-draw)
+  - [The human input:](#the-human-input)
+    - [Choice of deck](#choice-of-deck)
+    - [Minor Arcana:](#minor-arcana)
+    - [Major Arcana:](#major-arcana)
+    - [Offer choice of using reversed cards](#offer-choice-of-using-reversed-cards)
+    - [Use of crypto/rand](#use-of-cryptorand)
+  - [Tests](#tests)
+  - [Subsequently](#subsequently)
+  - [Notes on use](#notes-on-use)
+    - [Notes for Windows users](#notes-for-windows-users)
+    - [Notes for Mac Users](#notes-for-mac-users)
+    - [Note for desktop Linux users](#note-for-desktop-linux-users)
+
 > This program generates and shuffles a tarot deck. It then prompts the user to select the number of cards to draw from the deck, and displays those cards to the user. The program uses structs to represent the cards in the deck, and maps and slices to hold the names and suits of the cards. It also uses the crypto/rand and github.com/manifoldco/promptui packages to generate random numbers and create prompts for the user, respectively.
 
 This application was built with heavy input from an Artificial intelligence ('AI') - [ChatGPT](https://chat.openai.com/chat). The above paragraph was written by the AI as were most of the comments in the code. 
@@ -63,3 +77,31 @@ ok      github.com/joshuamkite/tarot-card-shuffle-draw  0.003s
 ## Subsequently
 
 Added interactive license display feature to comply with GPL 3.0; made minor changes to output formatting; added build script
+
+## Notes on use
+
+There is no installer or app store  and the offered binaries aren't signed- see notes below
+
+### Notes for Windows users
+
+The app is not signed (sorry, not interested in paying and going through the aggravation for a one-off hobby project). As a result you may see security notices about that. You can either accept this or build the app yourself locally.
+
+If you try 'clicking on the exe' you will see that the application exits immediately on completion. As described [here](https://superuser.com/questions/876933/running-exe-in-command-prompt) you can address this by either:
+
+> Start the command prompt and then just drag the .exe file into the cmd window. The full path to the file will be pasted into the prompt and you just have to press enter.
+
+**or**
+
+> Create a shortcut with the `/K` argument, e.g. 
+>
+    cmd /K "C:\SomeFolder\MyApp.exe"
+ 
+### Notes for Mac Users
+
+If you aren't sure what to download, `arm64` is equivalent to 'Apple Silicon'.
+
+This app isn't 'notarized' with Apple (sorry, not interested in paying and going through the aggravation for a one-off hobby project). You can either build it yourself locally or [context click](https://support.apple.com/en-gb/guide/mac-help/mh35853/mac) to confirm that you want to run the downloaded binary
+
+### Note for desktop Linux users
+
+I doubt anyone will need this but, yes, you will have to call this from a shell - most terminal emulators allow drag and drop, similar to Windows as described above
