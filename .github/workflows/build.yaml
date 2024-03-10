@@ -4,14 +4,12 @@ on:
   push:
     branches:
       - "**"
-    tags:
-      - "v*"
   pull_request:
-    branches:
-      - "**"
+    types: [closed] # Restricts PR jobs to only run when PRs are closed
 
 jobs:
   test:
+    if: github.event_name == 'push' # Runs only on push events
     name: Test on all branches
     runs-on: ubuntu-latest
     steps:
@@ -26,8 +24,9 @@ jobs:
         run: go test -v -cover ./...
 
   build:
-    name: Build and Package
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action == 'closed') # Runs on push or when PRs are closed
     needs: test
+    name: Build and Package
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -67,32 +66,10 @@ jobs:
           path: tarot_${{ matrix.goos }}_${{ matrix.goarch }}.zip
 
   release:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') # Ensures release only happens on tag push
     name: Create Release and Upload Artifacts
     needs: build
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
     steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: Binaries
-
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref_name }}
-          release_name: Release ${{ github.ref_name }}
-          draft: false
-          prerelease: false
-
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./tarot_linux_amd64.zip
-          asset_name: tarot_linux_amd64.zip
-          asset_content_type: application/zip
+      - name: Download all Artifacts
+        uses: actions/download-artifact@v4
