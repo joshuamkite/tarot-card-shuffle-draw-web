@@ -25,39 +25,46 @@ jobs:
       - name: Test
         run: go test ./...
 
+jobs:
   build:
-    name: Build and Package
-    needs: test
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        platform:
-          - "linux/amd64"
-          - "linux/arm64"
-          - "darwin/amd64"
-          - "darwin/arm64"
-          - "windows/amd64"
+        include:
+          - platform: "linux/amd64"
+            GOOS: "linux"
+            GOARCH: "amd64"
+          - platform: "darwin/amd64"
+            GOOS: "darwin"
+            GOARCH: "amd64"
+          - platform: "darwin/arm64"
+            GOOS: "darwin"
+            GOARCH: "arm64"
+          - platform: "windows/amd64"
+            GOOS: "windows"
+            GOARCH: "amd64"
     steps:
       - uses: actions/checkout@v3
 
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version: "1.22"
+          go-version: '1.17' # Adjust to match your Go version
 
       - name: Build
+        env:
+          GOOS: ${{ matrix.GOOS }}
+          GOARCH: ${{ matrix.GOARCH }}
+          PLATFORM: ${{ matrix.platform }}
         run: |
-          GOOS=${{ matrix.platform.split('/')[0] }} GOARCH=${{ matrix.platform.split('/')[1] }} go build -o ./bin/tarot_${{ matrix.platform.split('/')[0] }}_${{ matrix.platform.split('/')[1] }}${{ endsWith(matrix.platform, 'windows/amd64') && '.exe' || '' }} main.go
-
-      - name: Package Binaries
-        run: |
-          zip tarot_${{ matrix.platform.split('/')[0] }}_${{ matrix.platform.split('/')[1] }}.zip ./bin/tarot_${{ matrix.platform.split('/')[0] }}_${{ matrix.platform.split('/')[1] }}${{ endsWith(matrix.platform, 'windows/amd64') && '.exe' || '' }}
+          go build -o ./bin/tarot_${GOOS}_${GOARCH}${{ matrix.GOOS == 'windows' && '.exe' || '' }} main.go
+          zip tarot_${GOOS}_${GOARCH}.zip ./bin/tarot_${GOOS}_${GOARCH}${{ matrix.GOOS == 'windows' && '.exe' || '' }}
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: tarot-${{ matrix.platform }}
-          path: tarot_${{ matrix.platform.split('/')[0] }}_${{ matrix.platform.split('/')[1] }}.zip
+          path: tarot_${{ matrix.GOOS }}_${{ matrix.GOARCH }}.zip
 
   release:
     name: Create Release and Upload Artifacts
