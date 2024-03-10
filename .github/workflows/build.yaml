@@ -23,7 +23,7 @@ jobs:
           go-version: "1.22"
 
       - name: Test
-        run: go test ./...
+        run: go test -v -cover ./...
 
   build:
     name: Build and Package
@@ -50,7 +50,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: "1.22" # Adjust to match your Go version
+          go-version: "1.22"
 
       - name: Build
         run: |
@@ -96,4 +96,3 @@ jobs:
           asset_path: ./tarot_linux_amd64.zip
           asset_name: tarot_linux_amd64.zip
           asset_content_type: application/zip
-        # Repeat the above step for each binary you have, adjusting asset_path and asset_name accordingly.
