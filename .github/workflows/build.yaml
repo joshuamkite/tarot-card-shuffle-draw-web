@@ -60,6 +60,7 @@ jobs:
             VERSION=${GITHUB_REF#refs/tags/}
             docker build -t $IMAGE_NAME:$VERSION -t $IMAGE_NAME:latest .
             docker push $IMAGE_NAME:$VERSION
+            docker push $IMAGE_NAME:latest
           else
             docker build -t $IMAGE_NAME:latest .
             docker push $IMAGE_NAME:latest
@@ -81,6 +82,7 @@ jobs:
       - name: Tag Docker Image
         run: |
           IMAGE_NAME=ghcr.io/${{ github.repository }}/tarot_shuffle_draw
+          docker pull $IMAGE_NAME:latest
           docker tag $IMAGE_NAME:latest $IMAGE_NAME:${{ github.event.release.tag_name }}
           docker push $IMAGE_NAME:${{ github.event.release.tag_name }}
 
