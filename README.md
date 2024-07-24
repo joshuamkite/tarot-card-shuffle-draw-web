@@ -2,6 +2,19 @@
 
 Tarot Card Shuffle Draw is a web application that simulates a tarot card reading. Users can choose different decks, specify the number of cards to draw, and include reversed cards in the draw.
 
+- [Tarot Card Shuffle Draw](#tarot-card-shuffle-draw)
+  - [Features](#features)
+  - [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Running the Application Locally](#running-the-application-locally)
+    - [Running the Application with Docker](#running-the-application-with-docker)
+  - [Usage](#usage)
+    - [Web Interface](#web-interface)
+    - [API Endpoints](#api-endpoints)
+  - [Development and Testing](#development-and-testing)
+    - [Running Tests](#running-tests)
+
+
 ## Features
 
 - **Deck Options**: Full Deck, Major Arcana only, Minor Arcana only
