@@ -14,7 +14,6 @@ Tarot Card Shuffle Draw is a web application that simulates a tarot card reading
   - [Development and Testing](#development-and-testing)
     - [Running Tests](#running-tests)
 
-
 ## Features
 
 - **Deck Options**: Full Deck, Major Arcana only, Minor Arcana only
