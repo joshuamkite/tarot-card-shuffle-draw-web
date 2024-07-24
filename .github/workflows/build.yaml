@@ -62,29 +62,34 @@ jobs:
             docker push $IMAGE_NAME:$VERSION
           else
             docker build -t $IMAGE_NAME:latest .
+            docker push $IMAGE_NAME:latest
           fi
-          docker push $IMAGE_NAME:latest
 
   release:
     if: github.event_name == 'release'
-    name: Upload Artifacts to Existing Release
+    name: Upload Docker Image to Release
     needs: docker_build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Upload Release Artifacts
-        uses: actions/upload-artifact@v3
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
-          name: tarot_linux_amd64
-          path: ./bin/tarot_linux_amd64
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Update GitHub Release
+      - name: Tag Docker Image
+        run: |
+          IMAGE_NAME=ghcr.io/${{ github.repository }}/tarot_shuffle_draw
+          docker tag $IMAGE_NAME:latest $IMAGE_NAME:${{ github.event.release.tag_name }}
+          docker push $IMAGE_NAME:${{ github.event.release.tag_name }}
+
+      - name: Create GitHub Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: ./bin/tarot_linux_amd64
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.event.release.tag_name }}
           name: Release ${{ github.event.release.tag_name }}
+          body: |
+            Docker image for the release: `ghcr.io/${{ github.repository }}/tarot_shuffle_draw:${{ github.event.release.tag_name }}`
           allowUpdates: true
