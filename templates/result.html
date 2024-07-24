@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Drawn Cards</title>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        .reversed {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Your Drawn Cards</h1>
+    <ul>
+        {{ range $index, $card := .drawnCards }}
+        <li>{{ add $index 1 }}:
+            <img src="{{ $card.Image }}" alt="{{ $card.NameSuit }}" style="height:300px;"
+                class="{{ if $card.Reversed }}reversed{{ end }}">
+            {{ $card.Number }} {{ $card.NameSuit }} {{ $card.Reversed }}
+        </li>
+        {{ end }}
+    </ul>
+    {{ if .message }}
+    <p>{{ .message }}</p>
+    {{ end }}
+    <a href="/">Draw Again</a>
+</body>
+
+</html>

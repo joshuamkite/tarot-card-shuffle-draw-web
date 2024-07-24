@@ -7,7 +7,8 @@ on:
     tags:
       - "v*"
   pull_request:
-    types: [closed] # Restricts PR jobs to only run when PRs are closed
+    branches:
+      - "**"
 
 permissions:
   contents: write
@@ -15,80 +16,64 @@ permissions:
 
 jobs:
   test:
-    if: github.event_name == 'push' # Runs only on push events
-    name: Test on all branches
+    name: Test on all branches and PRs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: "1.22"
+
+      - name: Go mod tidy
+        run: go mod tidy
 
       - name: Test
         run: go test -v -cover ./...
 
-  build:
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action == 'closed') # Runs on push or when PRs are closed
+  docker_build:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true)
     needs: test
-    name: Build and Package
+    name: Build and Push Docker Image
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - platform: "linux/amd64"
-            goos: "linux"
-            goarch: "amd64"
-          - platform: "darwin/amd64"
-            goos: "darwin"
-            goarch: "amd64"
-          - platform: "darwin/arm64"
-            goos: "darwin"
-            goarch: "arm64"
-          - platform: "windows/amd64"
-            goos: "windows"
-            goarch: "amd64"
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Go
-        uses: actions/setup-go@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
-          go-version: "1.22"
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build
+      - name: Build and Push Docker Image
         run: |
-          GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -o ./bin/tarot_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.exe' || '' }} main.go
-
-      - name: Package Binaries
-        run: |
-          zip -j tarot_${{ matrix.goos }}_${{ matrix.goarch }}.zip ./bin/tarot_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.exe' || '' }}
-
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: tarot-${{ matrix.goos }}-${{ matrix.goarch }}
-          path: tarot_${{ matrix.goos }}_${{ matrix.goarch }}.zip
+          IMAGE_NAME=ghcr.io/${{ github.repository }}/tarot_shuffle_draw
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/}
+            docker build -t $IMAGE_NAME:$VERSION -t $IMAGE_NAME:latest .
+            docker push $IMAGE_NAME:$VERSION
+          else
+            docker build -t $IMAGE_NAME:latest .
+          fi
+          docker push $IMAGE_NAME:latest
 
   release:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') # Ensures release only happens on tag push
     name: Create Release and Upload Artifacts
-    needs: build
+    needs: docker_build
     runs-on: ubuntu-latest
     steps:
-      - name: Download all Artifacts
-        uses: actions/download-artifact@v4
-
-      - name: Upload Release Assets
-        run: |
-          for ARTIFACT_DIR in tarot-*; do
-            if [ -d "$ARTIFACT_DIR" ]; then
-              for ZIPFILE in $ARTIFACT_DIR/*.zip; do
-                echo "Uploading artifact ${ZIPFILE}..."
-                gh release upload "${{ github.ref_name }}" "${ZIPFILE}" --repo "${{ github.repository }}"
-              done
-            fi
-          done
+      - name: Create Release
+        uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false

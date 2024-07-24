@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Tarot Card Shuffle Draw</title>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Tarot Card Shuffle Draw</h1>
+    <form action="/draw" method="post">
+        <label for="deckSize">Which cards would you like to use?</label><br>
+        <select name="deckSize" id="deckSize">
+            <option value="Full Deck">Full Deck</option>
+            <option value="Major Arcana only">Major Arcana only</option>
+            <option value="Minor Arcana only">Minor Arcana only</option>
+        </select><br><br>
+
+        <label for="deckReverse">Would you like to include reversed cards?</label><br>
+        <select name="deckReverse" id="deckReverse">
+            <option value="Upright only">Upright only</option>
+            <option value="Upright and reversed" selected>Upright and reversed</option>
+        </select><br><br>
+
+        <label for="numCards">How many cards would you like to draw?</label><br>
+        <input type="number" id="numCards" name="numCards" value="8" min="1"><br><br>
+
+        <input type="submit" value="Draw Cards">
+    </form>
+    <br>
+    <pre>
+    Tarot Card Shuffle Draw is a free and open-source project that 
+    simulates a tarot card reading. It is designed for entertainment 
+    purposes only and should not be used as a substitute for professional 
+    advice. The project is written in Go and uses the Gin web framework. 
+    The source code is available on GitHub and is licensed under the 
+    GNU Affero General Public License.</pre>
+    <pre>
+    Copyright (C) 2024 Joshua Kite
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program. If not, see
+    <a href="https://www.gnu.org/licenses/">https://www.gnu.org/licenses/</a>
+    </pre>
+    <a href="/license">Read the License</a>
+</body>
+
+</html>
