@@ -5,7 +5,6 @@ Tarot Card Shuffle Draw is a web application that simulates a tarot card reading
 - [Tarot Card Shuffle Draw](#tarot-card-shuffle-draw)
   - [Features](#features)
   - [Getting Started](#getting-started)
-    - [Prerequisites](#prerequisites)
     - [Running the Application Locally](#running-the-application-locally)
     - [Running the Application with Docker](#running-the-application-with-docker)
   - [Usage](#usage)
@@ -25,12 +24,16 @@ Tarot Card Shuffle Draw is a web application that simulates a tarot card reading
 
 ## Getting Started
 
-### Prerequisites
+The included GitHub actions workflow covers test, build, package, publish.
+
+### Running the Application Locally
+
+**Prerequisites**
 
 - Go 1.22 or later
 - Docker (for containerized deployment)
 
-### Running the Application Locally
+There is a helper script for downloading the (included) images from Wikipedia/Wikimedia commons in `image_downloader`
 
 1. **Clone the repository**:
 

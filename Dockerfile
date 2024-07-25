@@ -32,5 +32,8 @@ COPY --from=builder /app/templates /templates
 # Expose the port the app runs on
 EXPOSE 80
 
+# Add a label for the image description
+LABEL org.opencontainers.image.description="Tarot card shuffle draw web application"
+
 # Command to run the executable
 CMD ["/tarot_shuffle_draw"]
