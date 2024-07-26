@@ -1,11 +1,9 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/joshuamkite/tarot-card-shuffle-draw-priviate/tarot_shuffle_draw
+  repository: ghcr.io/joshuamkite/tarot-card-shuffle-draw-web/tarot_shuffle_draw
   pullPolicy: IfNotPresent
   tag: "latest"
-  pullSecrets:
-    - name: ghcr-secret
 
 serviceAccount:
   create: true
