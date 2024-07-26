@@ -49,7 +49,7 @@ There is a helper script for downloading the (included) images from Wikipedia/Wi
     go run main.go
     ```
 
-3. **Open your browser** and navigate to `http://localhost:8080`.
+3. **Open your browser** and navigate to `http://localhost:80`.
 
 ### Running the Application with Docker
 

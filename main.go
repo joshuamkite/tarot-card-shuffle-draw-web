@@ -167,7 +167,7 @@ func main() {
 	router.POST("/draw", handleDraw)
 	router.GET("/license", showLicensePage)
 
-	router.Run(":8080")
+	router.Run(":80")
 }
 
 func showOptionsPage(c *gin.Context) {
