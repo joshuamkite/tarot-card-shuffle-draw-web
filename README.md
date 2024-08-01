@@ -1,6 +1,9 @@
 # Tarot Card Shuffle Draw
 
-Tarot Card Shuffle Draw is a web application that simulates a tarot card reading. Users can choose different decks, specify the number of cards to draw, and include reversed cards in the draw. Public domain illustrations of the cards are presented with the results. 
+Tarot Card Shuffle Draw is a free and open-source project that shuffles and returns a selection of Tarot cards. Users can choose different decks, specify the number of cards to draw, and include reversed cards in the draw. Public domain illustrations of the cards are presented with the results. 
+
+This port of the application is dockerised, with accompanying Helm chart that can be run in plain docker or installed on Kubernetes. A pre-built Docker image accompanies each release on [GitHub Container Registry](https://github.com/joshuamkite/tarot-card-shuffle-draw-web/pkgs/container/tarot-card-shuffle-draw-web%2Ftarot_shuffle_draw) There are other versions available - see [Alternative Deployment Ports](#alternative-deployment-ports) below
+
 
 - [Tarot Card Shuffle Draw](#tarot-card-shuffle-draw)
   - [Features](#features)
@@ -14,6 +17,7 @@ Tarot Card Shuffle Draw is a web application that simulates a tarot card reading
     - [API Endpoints](#api-endpoints)
   - [Development and Testing](#development-and-testing)
     - [Running Tests](#running-tests)
+  - [Alternative Deployment Ports](#alternative-deployment-ports)
 
 ## Features
 
@@ -158,3 +162,10 @@ Run the tests using the following command:
 
 ```sh
 go test -v -cover ./...
+```
+
+## Alternative Deployment Ports
+
+There is a cross platform command line port (sorry, no illustrations!) available with binaries packaged for various operating systems - see [tarot-card-shuffle-draw](https://github.com/joshuamkite/tarot-card-shuffle-draw)
+
+There is a serverless port deployed as AWS Lambda microservices orchestrated with API Gateway and backed with S3 and CloudFront - see [tarot-card-shuffle-draw-lambda](https://github.com/joshuamkite/tarot-card-shuffle-draw-lambda)
