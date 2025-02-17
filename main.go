@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"html/template"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strconv"
 
@@ -167,7 +168,13 @@ func main() {
 	router.POST("/draw", handleDraw)
 	router.GET("/license", showLicensePage)
 
-	router.Run(":80")
+	// Get port from environment variable or use default
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	router.Run(":" + port)
 }
 
 func showOptionsPage(c *gin.Context) {
