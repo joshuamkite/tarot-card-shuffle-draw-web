@@ -10,7 +10,7 @@ This port of the application is dockerised, with accompanying Helm chart that ca
   - [Getting Started](#getting-started)
     - [Running the Application Locally](#running-the-application-locally)
     - [Running the Application with Docker](#running-the-application-with-docker)
-    - [Running the Application with Helm](#running-the-application-with-helm)
+    - [Running the Application with Helm (Option 1)](#running-the-application-with-helm-option-1)
     - [Running the Application with ArgoCD](#running-the-application-with-argocd)
   - [Usage](#usage)
     - [Web Interface](#web-interface)
@@ -73,38 +73,26 @@ There is a helper script for downloading the (included) images from Wikipedia/Wi
 
 3. **Open your browser** and navigate to `http://localhost:8080`.
 
-### Running the Application with Helm
+### Running the Application with Helm (Option 1)
 
 **Prerequisites**
 
 - Kubernetes cluster
 - Helm installed
 
-1. **Add the Helm Repository**:
+1. **Install the Helm Chart**:
 
     ```sh
-    helm repo add tarot-card-shuffle-draw-web https://github.com/joshuamkite/tarot-card-shuffle-draw-web
+   helm install tarot-shuffle-draw helm/tarot-shuffle-draw --repo https://github.com/joshuamkite/tarot-card-shuffle-draw-web.git
     ```
 
-2. **Update the Helm Repository**:
-
-    ```sh
-    helm repo update
-    ```
-
-3. **Install the Helm Chart**:
-
-    ```sh
-    helm install tarot-shuffle-draw tarot-card-shuffle-draw-web/helm/tarot-shuffle-draw
-    ```
-
-4. **Access the Application**:
+2. **Access the Application**:
 
     ```sh
     kubectl get svc --namespace default
     ```
 
-    Look for the `tarot-shuffle-draw` service and note the `NodePort`. Access the application at `http://<node-ip>:<node-port>`.
+Look for the `tarot-shuffle-draw` service and note the `NodePort`. Access the application at `http://<node-ip>:<node-port>`.
 
 ### Running the Application with ArgoCD
 
@@ -113,25 +101,29 @@ There is a helper script for downloading the (included) images from Wikipedia/Wi
 - Kubernetes cluster
 - ArgoCD installed
 
-1. **Add the Application to ArgoCD**:
+1. **Login to ArgoCD**
+
+
+2. **Add the Application to ArgoCD**:
 
     Create a new application in ArgoCD pointing to this repository.
 
     ```sh
-    argocd app create tarot-shuffle-draw \
-      --repo https://github.com/joshuamkite/tarot-card-shuffle-draw-web.git \
-      --path helm/tarot-shuffle-draw \
-      --dest-server https://kubernetes.default.svc \
-      --dest-namespace default
+   argocd app create tarot-shuffle-draw \
+     --repo https://github.com/joshuamkite/tarot-card-shuffle-draw-web.git \
+     --path helm/tarot-shuffle-draw \
+     --dest-server https://kubernetes.default.svc \
+     --dest-namespace default \
+     --revision main
     ```
 
-2. **Sync the Application**:
+3. **Sync the Application**:
 
     ```sh
     argocd app sync tarot-shuffle-draw
     ```
 
-3. **Access the Application**:
+4. **Access the Application**:
 
     ```sh
     kubectl get svc --namespace default
